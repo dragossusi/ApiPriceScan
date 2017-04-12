@@ -1,11 +1,7 @@
 import com.google.gson.Gson;
 import spark.Request;
 import spark.Response;
-import spark.Service.StaticFiles;
 import spark.Spark;
-import spark.staticfiles.StaticFilesConfiguration;
-
-import java.security.Provider.Service;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,30 +13,26 @@ import static spark.Spark.get;
 class Hello {
 
 	static void setupListener(DBConnection connection, Gson gson) {
+    	Spark.staticFileLocation("/public");
 		try {
-			get("/", (Request req, Response res) -> {
-				log("A intrat pe /");
-				res.redirect("asd.html");
-				return null;
-			});
-			/// cautare
+	    	/// cautare
 			get("/search/:cod", (Request req, Response res) -> {
 				// TODO baga in hashmap rezultat(asta in thread cred, ca sa nu
 				// blocheze pentru alte cautari in acelasi timp
 				log("Cauta "+req.params("cod"));
 				if (connection.isCod(req.params("cod"))) {
 					HashMap<String, Object> finalResult = doMap(connection.getAll(req.params("cod")));
-
+					
 					log("Exista");
 					connection.closeConnection();
-
+					
 					res.type("application/json");
 					return gson.toJson(finalResult);
 				}
-
+				
 				log("Nu exista");
 				connection.closeConnection();
-
+				
 				return "Produsul cu codul " + req.params("cod") + " nu se afla in baza de date";
 			});
 
@@ -48,42 +40,32 @@ class Hello {
 			get("/magazine", (Request req, Response res) -> {
 				// TODO
 				ArrayList<Shop> magazine = connection.getShops();
-
+				
 				log("Lista magazine");
 				connection.closeConnection();
-
+				
 				res.type("application/json");
 				return gson.toJson(magazine);
 			});
 			///lista magazine din oras
 			get("/magazine/:oras",(Request req, Response res) -> {
 				ArrayList<Shop> magazine = connection.getShops(req.params("oras"));
-
+				
 				log("Lista magazine pentru orasul "+req.params("oras"));
 				connection.closeConnection();
-
+				
 				res.type("application/json");
 				return gson.toJson(magazine);
 			});
 			///lista nume firme din oras
 			get("/firme/:oras", (Request req, Response res) -> {
 				ArrayList<String> firme = connection.getFirme(req.params("oras"));
-
+				
 				log("Lista firme din roasul "+req.params("oras"));
 				connection.closeConnection();
-
+				
 				res.type("application/json");
 				return gson.toJson(firme);
-			});
-			///lsita orase
-			get("/orase", (Request req, Response res) -> {
-				ArrayList<String> orase = connection.getCities();
-
-				log("lista orase");
-				connection.closeConnection();
-
-				res.type("application/json");
-				return gson.toJson(orase);
 			});
 			///lista strazi
 			get("/strazi/:oras/:firma",(Request req, Response res) -> {
@@ -95,7 +77,24 @@ class Hello {
 				res.type("application/json");
 				return gson.toJson(strazi);
 			});
+			///lsita orase
+			get("/orase", (Request req, Response res) -> {
+				ArrayList<String> orase = connection.getCities();
+				
+				log("lista orase");
+				connection.closeConnection();
+				
+				res.type("application/json");
+				return gson.toJson(orase);
+			});
+			///default
+			get("/", (Request req, Response res) -> {
+				log("A intrat pe /");
+				res.redirect("asd.html");
+				return null;
+			});
 		} catch (Exception e) {
+			log("asd");
 			log(e);
 			e.printStackTrace();
 		}
