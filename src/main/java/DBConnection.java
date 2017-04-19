@@ -30,7 +30,7 @@ public class DBConnection {
     private static final String sqlCities = "select distinct oras from magazin";
     private static final String sqlStreets = "select distinct magazin.strada from magazin INNER JOIN  firma on magazin.id_firma = firma.id_firma"+
             " where firma.nume = '%s' and magazin.oras = '%s'";
-    
+    private static final String sqlInsert = "insert into produs values('%s','%s','%s','%s')";
     public DBConnection(){
         try {
             Class.forName(dbClass).newInstance();
@@ -127,5 +127,11 @@ public class DBConnection {
     public void closeConnection() throws Exception{
         connect.close();
         System.out.println("Conexiune inchisa\n");
+    }
+
+    public void insetProdus(String cod, String nume, String categorie, String image) throws Exception {
+        check();
+        System.out.println(String.format(sqlInsert,cod,nume,categorie,image));
+        stm.executeUpdate(String.format(sqlInsert,cod,nume,categorie,image));
     }
 }

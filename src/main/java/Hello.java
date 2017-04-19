@@ -2,12 +2,12 @@ import com.google.gson.Gson;
 import spark.Request;
 import spark.Response;
 import spark.Spark;
+
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import static spark.Spark.get;
-
 
 
 class Hello {
@@ -92,6 +92,14 @@ class Hello {
 				log("A intrat pe /");
 				res.redirect("asd.html");
 				return null;
+			});
+			get("/produs/:cod/:nume/:id_categorie", (Request req, Response res) -> {
+				connection.insetProdus(req.params("cod"),req.params("nume"),req.params("id_categorie"),null);
+				return "Succes";
+			});
+			get("/produs/:cod/:nume/:id_categorie/:image",(Request req, Response res) ->{
+				connection.insetProdus(req.params("cod"),req.params("nume"),req.params("id_categorie"),req.params("image"));
+				return "Succes";
 			});
 		} catch (Exception e) {
 			log("asd");
